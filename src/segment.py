@@ -49,19 +49,18 @@ class SegmentSystem:
         current_processing_index = word_start_index
         finish_index = len(input_sentence)
         
-        while True:
+        while current_processing_index != finish_index:
             matching = self.dictionary.search(input_sentence[word_start_index:current_processing_index+1])
             if not matching:
                 maximum_matching_word = input_sentence[word_start_index:current_processing_index]
                 segment_list.append(maximum_matching_word)
                 word_start_index = current_processing_index
-
             current_processing_index += 1
-            if current_processing_index == finish_index:
-                maximum_matching_word = input_sentence[word_start_index:current_processing_index]
-                segment_list.append(maximum_matching_word)
-                break
-
+        
+        # The last phrase
+        maximum_matching_word = input_sentence[word_start_index:current_processing_index]
+        segment_list.append(maximum_matching_word)
+ 
         return segment_list
 
 
@@ -81,5 +80,5 @@ if __name__ == '__main__':
 
     segments_agent = SegmentSystem()
     segments_agent.use_dictionary(dictionary)
-    segment_list = segments_agent.segments('今天天氣天氣')
+    segment_list = segments_agent.segments('麥當勞好好吃大便')
     print(segment_list)
