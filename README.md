@@ -31,9 +31,10 @@ print(segment_list)
 ```
 
 ## How to use?
-- clone this project
-- cd /src
-- execute main.py
+1. clone this project
+2. cd /src
+3. initialize dictionary: `python build_dictionary.py`
+4. enjoy it!
 ```
 1. Simple input:
 (env)$ python main.py -s '今天天氣好冷，這種天氣就想睡覺。睡眠不足的話，會氣噗噗'
