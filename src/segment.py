@@ -1,51 +1,8 @@
 # -*- coding: utf-8 -*-
-import xlrd
-import trie 
-import pickle
+import dictionary
 
-
-class Dictionary:
-    def __init__(self):
-        self.trie = trie.Trie()
-        self.max_len_for_each_word = dict()
-
-    def expand_dictionary_by_xls(self, dic_path):
-        book = xlrd.open_workbook(dic_path)
-        sh = book.sheet_by_index(0)
-        
-        for rx in range(sh.nrows):
-            phrase = sh.cell_value(rx, 2)
-            self.trie.insert(phrase)
-            
-            phrase_start_word = phrase[0]
-            longest = self.max_len_for_each_word.get(phrase_start_word)
-            phrase_len = len(phrase)
-            if not longest or longest < phrase_len:
-                self.max_len_for_each_word[phrase_start_word] = phrase_len
-
-
-    def save(self, obj_path='../dictionray/saved_dictionary.pkl'):
-        with open(obj_path, 'wb') as fd:
-            pickle.dump([self.trie, self.max_len_for_each_word], fd)
-
-    def load(self, obj_path='../dictionray/saved_dictionary.pkl'):
-        with open(obj_path, 'rb') as fd:
-            (self.trie, self.max_len_for_each_word) = pickle.load(fd)
-
-    def search(self, word):
-        return self.trie.search(word)
-    
-    def get_longest_length_of_word(self, word):
-        """ If not exist that starting word, it would return None """
-        value = self.max_len_for_each_word.get(word)
-        return value
-
-class DictionaryDoesNotExistError(Exception):
-    def __init__(self,*args,**kwargs):
-        Exception.__init__(self,*args,**kwargs)
 
 class SegmentSystem:
-
     def __init__(self):
         self.dictionary = None
     
@@ -54,7 +11,7 @@ class SegmentSystem:
 
     def segments(self, input_sentence):
         if self.dictionary is None:
-            raise DictionaryDoesNotExistError 
+            raise dictionary.DictionaryDoesNotExistError
 
         segment_list = []
         word_start_index = 0
@@ -79,26 +36,3 @@ class SegmentSystem:
                     break
             
         return segment_list
-
-
-
-
-# if __name__ == '__main__':
-#     dict_1 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_1.xls'
-#     dict_2 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_2.xls'
-#     dict_3 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_3.xls'
-    
-#     dictionary = Dictionary()
-#     # dictionary.load()
-#     dictionary.expand_dictionary_by_xls(dict_1)
-#     dictionary.expand_dictionary_by_xls(dict_2)
-#     dictionary.expand_dictionary_by_xls(dict_3)
-#     dictionary.save()
-
-#     segments_agent = SegmentSystem()
-#     segments_agent.use_dictionary(dictionary)
-
-#     context = '''勞神勞力又勞心勞費的勞什骨子喜歡勞什子嗎？'''
-#     segment_list = segments_agent.segments(context)
-#     print(segment_list)
-
