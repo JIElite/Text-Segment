@@ -24,13 +24,13 @@ class Dictionary:
                 self.max_len_for_each_word[phrase_start_word] = phrase_len
 
 
-    def save(self, obj_path='../dictionray/dictionary_trie.pkl'):
+    def save(self, obj_path='../dictionray/saved_dictionary.pkl'):
         with open(obj_path, 'wb') as fd:
-            pickle.dump(self.trie, fd)
-    
-    def load(self, obj_path='../dictionray/dictionary_trie.pkl'):
+            pickle.dump([self.trie, self.max_len_for_each_word], fd)
+
+    def load(self, obj_path='../dictionray/saved_dictionary.pkl'):
         with open(obj_path, 'rb') as fd:
-            self.trie = pickle.load(fd)
+            (self.trie, self.max_len_for_each_word) = pickle.load(fd)
 
     def search(self, word):
         return self.trie.search(word)
@@ -53,7 +53,7 @@ class SegmentSystem:
         self.dictionary = dictionary
 
     def segments(self, input_sentence):
-        if dictionary is None:
+        if self.dictionary is None:
             raise DictionaryDoesNotExistError 
 
         segment_list = []
@@ -71,7 +71,6 @@ class SegmentSystem:
             for length in range(search_len, 0, -1):
                 searching_phrase = input_sentence[word_start_index:word_start_index+length]
                 found_in_dict = self.dictionary.search(searching_phrase)
-                
                 if found_in_dict or length == 1:
                     # segment by maximum matching or just add word not existed in dict
                     maximum_matching = searching_phrase
@@ -84,22 +83,22 @@ class SegmentSystem:
 
 
 
-if __name__ == '__main__':
-    dict_1 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_1.xls'
-    dict_2 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_2.xls'
-    dict_3 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_3.xls'
+# if __name__ == '__main__':
+#     dict_1 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_1.xls'
+#     dict_2 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_2.xls'
+#     dict_3 = '../dictionray/dict_revised_2015_20160523/dict_revised_2015_20160523_3.xls'
     
-    dictionary = Dictionary()
-    # dictionary.load()
-    dictionary.expand_dictionary_by_xls(dict_1)
-    dictionary.expand_dictionary_by_xls(dict_2)
-    dictionary.expand_dictionary_by_xls(dict_3)
-    dictionary.save()
+#     dictionary = Dictionary()
+#     # dictionary.load()
+#     dictionary.expand_dictionary_by_xls(dict_1)
+#     dictionary.expand_dictionary_by_xls(dict_2)
+#     dictionary.expand_dictionary_by_xls(dict_3)
+#     dictionary.save()
 
-    segments_agent = SegmentSystem()
-    segments_agent.use_dictionary(dictionary)
+#     segments_agent = SegmentSystem()
+#     segments_agent.use_dictionary(dictionary)
 
-    context = '''勞神勞力又勞心勞費的勞什骨子喜歡勞什子嗎？'''
-    segment_list = segments_agent.segments(context)
-    print(segment_list)
+#     context = '''勞神勞力又勞心勞費的勞什骨子喜歡勞什子嗎？'''
+#     segment_list = segments_agent.segments(context)
+#     print(segment_list)
 
